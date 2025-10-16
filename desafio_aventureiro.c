@@ -31,7 +31,16 @@ int main() {
 
     struct PistaNode* pistas_coletadas = NULL;
 
-    printf("Bem-vindo ao Detective Quest!\n");
+    
+    printf("=============================================\n");
+    printf("         Bem-vindo ao Detective Quest!       \n");
+    printf("=============================================\n");
+    printf("--- MAPA DA MANSAO ---\n\n");
+    printf("                       [Hall de Entrada]\n");
+    printf("                      /                 \\\n");
+    printf("           [Sala de Jantar]           [Biblioteca]\n");
+    printf("           /                           /          \\\n");
+    printf("       [Cozinha]                   [Escritorio]   [Jardim]\n\n");
 
     explorarSalasComPistas(raiz, &pistas_coletadas);
 
