@@ -24,8 +24,6 @@ int main() {
     printf("=============================================\n");
     printf("         Bem-vindo ao Detective Quest!       \n");
     printf("=============================================\n");
-    printf("Voce e um detetive renomado, chamado para resolver um misterio\n");
-    printf("nesta antiga mansao. Explore os comodos para encontrar o culpado.\n\n");
     printf("--- MAPA DA MANSAO ---\n\n");
     printf("                       [Hall de Entrada]\n");
     printf("                      /                 \\\n");
