@@ -1,4 +1,4 @@
-//Desafio detetive novato
+// Desafio detetive novato 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +11,7 @@ struct Sala {
 
 struct Sala* criarSala(char* nome);
 void explorarSalas(struct Sala* sala_inicial);
-
+void liberarMapa(struct Sala* sala_atual);
 
 int main() {
     struct Sala* raiz = criarSala("Hall de Entrada");
@@ -21,14 +21,26 @@ int main() {
     raiz->direita->direita = criarSala("Jardim");
     raiz->direita->esquerda = criarSala("Escritorio");
 
-    printf("Bem-vindo ao Detective Quest!\n");
+    printf("=============================================\n");
+    printf("         Bem-vindo ao Detective Quest!       \n");
+    printf("=============================================\n");
+    printf("Voce e um detetive renomado, chamado para resolver um misterio\n");
+    printf("nesta antiga mansao. Explore os comodos para encontrar o culpado.\n\n");
+    printf("--- MAPA DA MANSAO ---\n\n");
+    printf("                       [Hall de Entrada]\n");
+    printf("                      /                 \\\n");
+    printf("           [Sala de Jantar]           [Biblioteca]\n");
+    printf("           /                           /          \\\n");
+    printf("       [Cozinha]                   [Escritorio]   [Jardim]\n\n");
     
     explorarSalas(raiz);
 
     printf("\nObrigado por jogar!\n");
+    
+    liberarMapa(raiz);
+    
     return 0;
 }
-
 
 struct Sala* criarSala(char* nome) {
     struct Sala* nova_sala = (struct Sala*) malloc(sizeof(struct Sala));
@@ -38,12 +50,19 @@ struct Sala* criarSala(char* nome) {
     return nova_sala;
 }
 
-
 void explorarSalas(struct Sala* sala_atual) {
     char escolha;
 
-    while (sala_atual->esquerda != NULL || sala_atual->direita != NULL) {
-        printf("\nVoce esta em: %s\n", sala_atual->nome);
+    while (1) {
+        printf("\n---------------------------------------------\n");
+        printf("Voce esta em: %s\n", sala_atual->nome);
+
+        if (sala_atual->esquerda == NULL && sala_atual->direita == NULL) {
+            printf("Fim do caminho! Este e um beco sem saida.\n");
+            printf("Fim da exploracao.\n");
+            break;
+        }
+
         printf("Para onde voce quer ir? (e -> esquerda, d -> direita, s -> sair): ");
         scanf(" %c", &escolha);
 
@@ -66,7 +85,13 @@ void explorarSalas(struct Sala* sala_atual) {
             printf("Comando invalido!\n");
         }
     }
-    
-    printf("\nVoce chegou em: %s\n", sala_atual->nome);
-    printf("Fim do caminho! Este e um beco sem saida.\n");
+}
+
+void liberarMapa(struct Sala* sala_atual) {
+    if (sala_atual == NULL) {
+        return;
+    }
+    liberarMapa(sala_atual->esquerda);
+    liberarMapa(sala_atual->direita);
+    free(sala_atual);
 }
