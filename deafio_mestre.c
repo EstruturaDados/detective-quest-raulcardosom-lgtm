@@ -1,12 +1,11 @@
-// Desafio detetive Mestre - Versão Final Polida (Nota 10+)
+//Desafio detetive mestre
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h> // Necessário para a função tolower()
+#include <ctype.h>
 
 #define HASH_TABLE_SIZE 10
 
-// --- ESTRUTURAS DE DADOS (Com formatação aprimorada) ---
 struct Sala {
     char nome[50];
     char* pista;
@@ -30,21 +29,20 @@ struct HashTable {
     struct HashNode* baldes[HASH_TABLE_SIZE];
 };
 
-// --- PROTÓTIPOS DAS FUNÇÕES ---
 struct Sala* criarSala(char* nome, char* pista);
 void explorarSalas(struct Sala* sala_inicial, struct PistaNode** pistas_raiz);
 struct PistaNode* inserirPista(struct PistaNode* raiz, char* pista);
 unsigned int hash(char* pista);
 void inserirNaHash(struct HashTable* tabela, char* pista, char* suspeito);
 char* encontrarSuspeito(struct HashTable* tabela, char* pista);
+void contarPistas(struct PistaNode* pistas, char* suspeitoAcusado, struct HashTable* tabela, int* contador);
 void verificarSuspeitoFinal(struct PistaNode* pistas_coletadas, struct HashTable* tabela);
 void liberarMapa(struct Sala* sala);
 void liberarPistas(struct PistaNode* pistas);
 void liberarHash(struct HashTable* tabela);
-void strToLower(char *str); // Função de polimento
+void strToLower(char *str);
 
 int main() {
-    // ... (toda a sua seção main, que já está perfeita, permanece aqui) ...
     struct Sala* raiz = criarSala("Hall de Entrada", "Um casaco molhado perto da porta.");
     raiz->esquerda = criarSala("Sala de Jantar", "Um prato quebrado com um monograma estranho.");
     raiz->direita = criarSala("Biblioteca", "Um livro de venenos fora do lugar.");
@@ -69,8 +67,16 @@ int main() {
     printf("====================================================\n");
     printf("        Bem-vindo ao Detective Quest: O Ato Final   \n");
     printf("====================================================\n");
+
+    printf("--- MAPA DA MANSAO ---\n\n");
+    printf("                       [Hall de Entrada]\n");
+    printf("                      /                 \\\n");
+    printf("           [Sala de Jantar]           [Biblioteca]\n");
+    printf("           /                           /          \\\n");
+    printf("       [Cozinha]                   [Escritorio]   [Jardim]\n\n");
     
     explorarSalas(raiz, &pistas_coletadas);
+    
     verificarSuspeitoFinal(pistas_coletadas, &tabela_de_suspeitos);
     
     printf("\nLimpando a cena do crime...\n");
@@ -80,55 +86,6 @@ int main() {
     
     printf("\nObrigado por jogar!\n");
     return 0;
-}
-
-// --- IMPLEMENTAÇÕES ---
-
-// Função de polimento: converte uma string para minúsculas
-void strToLower(char *str) {
-    for (; *str; ++str) *str = tolower(*str);
-}
-
-void verificarSuspeitoFinal(struct PistaNode* pistas_coletadas, struct HashTable* tabela) {
-    if (pistas_coletadas == NULL) {
-        printf("\nVoce nao coletou pistas suficientes para fazer uma acusacao.\n");
-        return;
-    }
-    char acusado[50];
-    printf("\n====================================================\n");
-    printf("                  HORA DO JULGAMENTO                  \n");
-    printf("====================================================\n");
-    printf("Com base nas pistas que voce coletou, quem e o culpado?\n");
-    printf("Suspeitos possiveis: Mordomo, Cozinheira, Jardineiro\n");
-    printf("Sua acusacao: ");
-    scanf("%49s", acusado);
-    strToLower(acusado); // Padroniza a entrada do usuário
-
-    int contagem_de_pistas = 0;
-    
-    // Contagem usando a mesma lógica recursiva, mas com comparação padronizada
-    void contarPistas(struct PistaNode* pistas) {
-        if (pistas == NULL) return;
-        contarPistas(pistas->esquerda);
-        
-        char* suspeitoDaPista = encontrarSuspeito(tabela, pistas->pista);
-        if (suspeitoDaPista != NULL && strcmp(suspeitoDaPista, acusado) == 0) {
-            contagem_de_pistas++;
-        }
-        
-        contarPistas(pistas->direita);
-    }
-    contarPistas(pistas_coletadas);
-
-    printf("\n-------------------- VEREDITO --------------------\n");
-    printf("Voce acusou: %s.\nA investigacao revela que %d pista(s) apontam para esta pessoa.\n\n", acusado, contagem_de_pistas);
-
-    if (contagem_de_pistas >= 2) {
-        printf("PROVAS SUFICIENTES! Voce desvendou o misterio! VITORIA!\n");
-    } else {
-        printf("PROVAS INSUFICIENTES! O verdadeiro culpado escapou... DERROTA!\n");
-    }
-    printf("--------------------------------------------------\n");
 }
 
 struct Sala* criarSala(char* nome, char* pista) {
@@ -148,21 +105,19 @@ void explorarSalas(struct Sala* sala_inicial, struct PistaNode** pistas_raiz) {
         if (sala_atual->pista != NULL) {
             printf(">> PISTA ENCONTRADA: '%s'\n", sala_atual->pista);
             *pistas_raiz = inserirPista(*pistas_raiz, sala_atual->pista);
-            sala_atual->pista = NULL; // Pista coletada
+            sala_atual->pista = NULL;
         }
         printf("Para onde voce quer ir? (e -> esquerda, d -> direita, s -> sair): ");
         scanf(" %c", &escolha);
+
         if (escolha == 's' || escolha == 'S') { 
             printf("Voce se retira para analisar as pistas...\n");
             break; 
-        }
-        else if ((escolha == 'e' || escolha == 'E') && sala_atual->esquerda != NULL) { 
+        } else if ((escolha == 'e' || escolha == 'E') && sala_atual->esquerda != NULL) { 
             sala_atual = sala_atual->esquerda; 
-        }
-        else if ((escolha == 'd' || escolha == 'D') && sala_atual->direita != NULL) { 
+        } else if ((escolha == 'd' || escolha == 'D') && sala_atual->direita != NULL) { 
             sala_atual = sala_atual->direita; 
-        }
-        else { 
+        } else { 
             printf(">> Caminho invalido ou bloqueado.\n"); 
         }
     }
@@ -213,6 +168,49 @@ char* encontrarSuspeito(struct HashTable* tabela, char* pista) {
     return NULL;
 }
 
+void contarPistas(struct PistaNode* pistas, char* suspeitoAcusado, struct HashTable* tabela, int* contador) {
+    if (pistas == NULL) return;
+    
+    contarPistas(pistas->esquerda, suspeitoAcusado, tabela, contador);
+    
+    char* suspeitoDaPista = encontrarSuspeito(tabela, pistas->pista);
+    if (suspeitoDaPista != NULL && strcmp(suspeitoDaPista, suspeitoAcusado) == 0) {
+        (*contador)++;
+    }
+    
+    contarPistas(pistas->direita, suspeitoAcusado, tabela, contador);
+}
+
+void verificarSuspeitoFinal(struct PistaNode* pistas_coletadas, struct HashTable* tabela) {
+    if (pistas_coletadas == NULL) {
+        printf("\nVoce nao coletou pistas suficientes para fazer uma acusacao.\n");
+        return;
+    }
+    char acusado[50];
+    printf("\n====================================================\n");
+    printf("                  HORA DO JULGAMENTO                  \n");
+    printf("====================================================\n");
+    printf("Com base nas pistas que voce coletou, quem e o culpado?\n");
+    printf("Suspeitos possiveis: Mordomo, Cozinheira, Jardineiro\n");
+    printf("Sua acusacao: ");
+    scanf("%49s", acusado);
+    strToLower(acusado);
+
+    int contagem_de_pistas = 0;
+    
+    contarPistas(pistas_coletadas, acusado, tabela, &contagem_de_pistas);
+
+    printf("\n-------------------- VEREDITO --------------------\n");
+    printf("Voce acusou: %s.\nA investigacao revela que %d pista(s) apontam para esta pessoa.\n\n", acusado, contagem_de_pistas);
+
+    if (contagem_de_pistas >= 2) {
+        printf("PROVAS SUFICIENTES! Voce desvendou o misterio! VITORIA!\n");
+    } else {
+        printf("PROVAS INSUFICIENTES! O verdadeiro culpado escapou... DERROTA!\n");
+    }
+    printf("--------------------------------------------------\n");
+}
+
 void liberarMapa(struct Sala* sala) {
     if (sala == NULL) return;
     liberarMapa(sala->esquerda);
@@ -236,6 +234,8 @@ void liberarHash(struct HashTable* tabela) {
             free(temp);
         }
     }
-}// inserirNaHash, encontrarSuspeito e as três funções de liberação. Elas já são 10/10
-// e não precisam de alterações, exceto pelos suspeitos na main estarem em minúsculo.)
-// As implementações que eu já forneci antes estão perfeitas para serem usadas aqui.
+}
+
+void strToLower(char *str) {
+    for (; *str; ++str) *str = tolower(*str);
+}
